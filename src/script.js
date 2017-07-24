@@ -5,15 +5,15 @@
 "use strict";
 
 (function () {
-    if (!(/个人主页$/.test(document.title))) return;
+    //若非个人主页与搜索画板，则不注入
+    if (!(/个人主页$/.test(document.title) || /search\/boards/.test(location.href))) return;
 
-    // var docFragment = document.createDocumentFragment();
 
     const DOWNLOAD_PATH = 'http://127.0.0.1:13888/download/';
 
     console.log('%c欢迎使用大王的超级无敌下下下!', 'color:red; font-size:48px;');
 
-    function fetchDownload() {
+    function fetchDownload(type, id) {
         let XML = new XMLHttpRequest();
         if (!XML) return alert('你的浏览器不支持AJAX');
         XML.onreadystatechange = function () {
@@ -26,18 +26,19 @@
                 }
             }
         };
-        let id = this.parentNode.getAttribute('data-id');
-        let url = encodeURIComponent('http://huaban.com/boards/' + id);
-        XML.open('GET', DOWNLOAD_PATH + url);
-        XML.send()
+        //设置内容类型
+        // XML.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        XML.open('post', `${DOWNLOAD_PATH}${encodeURIComponent(type)}/${encodeURIComponent(id)}`, true);
+        XML.send();
     }
 
-    function createBtn() {
+    function createBtn(pEle) {
         let btnEle = document.createElement('a');
         btnEle.href = 'javascript:;';
         btnEle.className = '__xyc_download_btn__';
         btnEle.innerText = '去吧！皮卡丘！';
-        btnEle.addEventListener('click', fetchDownload);
+        let id = pEle.parentNode.getAttribute('data-id');
+        btnEle.addEventListener('click', fetchDownload.bind(this, 'board', id));
 
         return btnEle;
     }
@@ -48,9 +49,19 @@
 
         for (let i = 0; i < domList.length; i++) {
             let dom = domList[i];
-            dom.appendChild(createBtn());
+            //判断是否已插入下载按钮
+            if (!dom.querySelector('.__xyc_download_btn__')) {
+                dom.appendChild(createBtn(dom));
+            }
         }
     }
 
     insert();
+
+    let waterfall = document.querySelector('#waterfall');
+    //对列表进行DOM监听，发生DOM变化时重新注入下载按钮
+    waterfall && waterfall.addEventListener('DOMSubtreeModified', function () {
+        insert();
+    });
+
 })();

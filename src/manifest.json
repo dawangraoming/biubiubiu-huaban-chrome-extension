@@ -1,5 +1,5 @@
 {
-  "name": "大王的超级无敌下下下",
+  "name": "BiuBiuBiu 花瓣下载",
   "description": "一个下载花瓣画板到本地的工具，使用前请打开服务端。http://www.yeenuo.net",
   "version": "1.0",
   "permissions": [
@@ -8,13 +8,13 @@
     "https://*/*"
   ],
   "browser_action": {
-    "default_title": "超级无敌下下下",
+    "default_title": "BiuBiuBiu 花瓣下载",
     "default_icon": "icon.png"
   },
   "content_scripts": [
     {
       "matches": [
-        "*://*.huaban.com/*/"
+        "*://*.huaban.com/*"
       ],
       "css": [
         "style.css"
